@@ -1,0 +1,60 @@
+
+// First, find the script element by its ID
+const scriptElement = document.getElementById('__NEXT_DATA__');
+
+// Check if the element exists
+if (scriptElement) {
+    // Parse the JSON content of the script element
+    const jsonData = JSON.parse(scriptElement.textContent);
+
+    // Navigate to the specific path where trackUrl, title, and icon16x16 are located
+    const chapters = jsonData.props.pageProps.card.content.chapters;
+
+    // Create a container for the links
+    const container = document.createElement('div');
+    container.style.margin = '20px';
+    container.style.backgroundColor = '#deefff';
+    container.style.padding = '20px';
+
+    // Add a title to the container
+    const containerTitle = document.createElement('h2');
+    containerTitle.textContent = 'Track and Image Links';
+    container.appendChild(containerTitle);
+
+    // Add an explanatory paragraph to the container
+    const containerP = document.createElement('p');
+    containerP.textContent = 'You can download the MP3 files and view the images directly from the links below. Use Batch Link Downloader to download all at once';
+    container.appendChild(containerP);
+    
+    // Loop through chapters and tracks to create links
+    chapters.forEach(chapter => {
+        chapter.tracks.forEach(track => {
+            // Create a link element for each track
+            const trackLink = document.createElement('a');
+            trackLink.href = track.trackUrl;
+            trackLink.textContent = `Track: ${track.title}`;
+            trackLink.target = '_blank'; // Open in new tab
+            trackLink.style.display = 'block'; // Display each link on a new line
+
+            // Append the track link to the container
+            container.appendChild(trackLink);
+
+            // Create a link element for each image
+            if (chapter.display && chapter.display.icon16x16) {
+                const imageLink = document.createElement('a');
+                imageLink.href = chapter.display.icon16x16;
+                imageLink.textContent = `Image: ${track.title}`;
+                imageLink.target = '_blank';
+                imageLink.style.display = 'block';
+
+                // Append the image link to the container
+                container.appendChild(imageLink);
+            }
+        });
+    });
+
+    // Insert the container at the top of the body of the page
+    document.body.insertBefore(container, document.body.firstChild);
+} else {
+    console.error('Script element not found');
+}
