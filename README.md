@@ -1,4 +1,4 @@
-# yoto-downloader
+# Downloader for Yoto
 Audio file downloader for Yoto Player
 
 This project provides a simple and efficient tool for downloading audio files from Yoto cards and MYO playlists. The tool is designed to help users easily backup their purchased content in a future-proof medium. 
@@ -13,6 +13,7 @@ This project provides a simple and efficient tool for downloading audio files fr
 
 ## Prerequisites
 
+- The Downloader for Yoto bookmarklet. Drag this link to your bookmark bar: [Downloader for Yoto] ()
 - Yoto Player and MYO cards
 - Google Chrome
 - [Simple Mass Download](https://chromewebstore.google.com/detail/simple-mass-downloader/abdkkegmcbiomijcbdaodaflgehfffed) (optional but very much recommended)
