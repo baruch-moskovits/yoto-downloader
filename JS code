@@ -1,4 +1,3 @@
-
 // First, find the script element by its ID
 const scriptElement = document.getElementById('__NEXT_DATA__');
 
@@ -18,12 +17,12 @@ if (scriptElement) {
 
     // Add a title to the container
     const containerTitle = document.createElement('h2');
-    containerTitle.textContent = 'Track and Image Links';
+    containerTitle.innerHTML += '<a href="https://github.com/baruch-moskovits/yoto-downloader">Downloader for Yoto</a>';
     container.appendChild(containerTitle);
 
     // Add an explanatory paragraph to the container
     const containerP = document.createElement('p');
-    containerP.textContent = 'You can download the MP3 files and view the images directly from the links below. Use Batch Link Downloader to download all at once';
+containerP.innerHTML += 'You can download the MP3 files and view the images directly from the links below. Use <a href="https://chromewebstore.google.com/detail/simple-mass-downloader/abdkkegmcbiomijcbdaodaflgehfffed">Simple Mass Downloader</a> to download all at once.';
     container.appendChild(containerP);
     
     // Loop through chapters and tracks to create links
