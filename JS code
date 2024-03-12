@@ -22,32 +22,42 @@ if (scriptElement) {
 
     // Add an explanatory paragraph to the container
     const containerP = document.createElement('p');
-containerP.innerHTML += 'You can download the MP3 files and view the images directly from the links below. Use <a href="https://chromewebstore.google.com/detail/simple-mass-downloader/abdkkegmcbiomijcbdaodaflgehfffed">Simple Mass Downloader</a> to download all at once.';
+    containerP.innerHTML += 'You can download the MP3 files and view the images directly from the links below. Use <a href="https://chromewebstore.google.com/detail/simple-mass-downloader/abdkkegmcbiomijcbdaodaflgehfffed">Simple Mass Downloader</a> to download all at once.';
     container.appendChild(containerP);
     
+    // Initialize track and image numbers
+    let trackNumber = 1;
+    let imageNumber = 1;
+
     // Loop through chapters and tracks to create links
     chapters.forEach(chapter => {
         chapter.tracks.forEach(track => {
             // Create a link element for each track
             const trackLink = document.createElement('a');
             trackLink.href = track.trackUrl;
-            trackLink.textContent = `Track: ${track.title}`;
+            trackLink.textContent = `Track ${trackNumber}: ${track.title}`;
             trackLink.target = '_blank'; // Open in new tab
             trackLink.style.display = 'block'; // Display each link on a new line
 
             // Append the track link to the container
             container.appendChild(trackLink);
 
+            // Increment track number
+            trackNumber++;
+
             // Create a link element for each image
             if (chapter.display && chapter.display.icon16x16) {
                 const imageLink = document.createElement('a');
                 imageLink.href = chapter.display.icon16x16;
-                imageLink.textContent = `Image: ${track.title}`;
+                imageLink.textContent = `Image ${imageNumber}: ${track.title}`;
                 imageLink.target = '_blank';
                 imageLink.style.display = 'block';
 
                 // Append the image link to the container
                 container.appendChild(imageLink);
+
+                // Increment image number
+                imageNumber++;
             }
         });
     });
