@@ -8,7 +8,7 @@ if (scriptElement) {
 
     // Navigate to the specific path where trackUrl, title, and icon16x16 are located
     const chapters = jsonData.props.pageProps.card.content.chapters;
-
+    
     // Create a container for the links
     const container = document.createElement('div');
     container.style.margin = '20px';
@@ -24,7 +24,40 @@ if (scriptElement) {
     const containerP = document.createElement('p');
     containerP.innerHTML += 'You can download the MP3 files and view the images directly from the links below. Use <a href="https://chromewebstore.google.com/detail/simple-mass-downloader/abdkkegmcbiomijcbdaodaflgehfffed">Simple Mass Downloader</a> to download all at once.';
     container.appendChild(containerP);
-    
+	
+	 // Get the card art
+    const card = jsonData.props.pageProps.card;
+    const albumArtLink = document.createElement('a');
+    albumArtLink.href = card.metadata.cover.imageL;
+    albumArtLink.textContent = `${card.title} - cover`;
+    albumArtLink.target = '_blank'; // Open in a new tab
+    albumArtLink.style.display = 'block'; // Display link on a new line
+    container.appendChild(albumArtLink); // Append the album art link to the container
+
+    // Write metadata to a text file
+    const containermeta = document.createElement('textarea');    
+    //containermeta.innerHTML += '<textarea id="metadataContent" rows="10" cols="30">';
+    containermeta.innerHTML += `Card Details\n================\n`;
+    containermeta.innerHTML += `Title: ${card.title}\n`;
+    containermeta.innerHTML += `Version: ${card.content.version}\n`;    
+    containermeta.innerHTML += `PlaybackType: ${card.content.playbackType}\n`;
+    containermeta.innerHTML += `Category: ${card.metadata.category}\n`;
+    containermeta.innerHTML += `Duration: ${card.metadata.media.duration}\n`;
+    containermeta.innerHTML += `readableDuration: ${card.metadata.media.readableDuration}\n`;
+    containermeta.innerHTML += `FileSize: ${card.metadata.media.fileSize}\n`;
+    containermeta.innerHTML += `ReadableFileSize: ${card.metadata.media.readableFileSize}\n`;
+    containermeta.innerHTML += `CardID: ${card.Id}\n`;
+    containermeta.innerHTML += `CreatedAt: ${card.createdAt}\n`;
+    containermeta.innerHTML += `UpdatedAt: ${card.updatedAt}\n`; 
+    containermeta.innerHTML += `ShareCount: ${card.shareCount}\n`;
+    containermeta.innerHTML += `Availability: ${card.availability}\n`;
+    containermeta.innerHTML += `ShareLinkUrl: ${card.shareLinkUrl}\n`;    
+    containermeta.innerHTML += `\n`;
+    containermeta.innerHTML += `Description: ${card.metadata.description}\n`;
+    containermeta.innerHTML += `\n`;
+    containermeta.innerHTML += `Track Details\n================\n`;    
+    // metadata continues after the tracks are looped to include track details
+
     // Initialize track and image numbers
     let trackNumber = 1;
     let imageNumber = 1;
@@ -35,12 +68,24 @@ if (scriptElement) {
             // Create a link element for each track
             const trackLink = document.createElement('a');
             trackLink.href = track.trackUrl;
-            trackLink.textContent = `Track ${trackNumber}: ${track.title}`;
+
+            // Pad the track number to 3 digits, Yoto cards can have up to 100 tracks
+            trackLink.textContent = `${card.title} - ${String(trackNumber).padStart(3, 0)} - ${track.title}`; 
             trackLink.target = '_blank'; // Open in new tab
             trackLink.style.display = 'block'; // Display each link on a new line
 
             // Append the track link to the container
             container.appendChild(trackLink);
+
+            // Add the track info into the metadata file
+            containermeta.innerHTML += `TrackNumber: ${String(trackNumber).padStart(3, 0)}\n`;
+            containermeta.innerHTML += `Title: ${track.title}\n`;
+            containermeta.innerHTML += `Format: ${track.format}\n`;
+            containermeta.innerHTML += `Type: ${track.type}\n`;
+            containermeta.innerHTML += `Duration (Seconds): ${track.duration}\n`;
+            containermeta.innerHTML += `FileSize: ${track.fileSize}\n`;
+            containermeta.innerHTML += `channels: ${track.channels}\n`;
+            containermeta.innerHTML += `\n`;
 
             // Increment track number
             trackNumber++;
@@ -49,7 +94,7 @@ if (scriptElement) {
             if (chapter.display && chapter.display.icon16x16) {
                 const imageLink = document.createElement('a');
                 imageLink.href = chapter.display.icon16x16;
-                imageLink.textContent = `Image ${imageNumber}: ${track.title}`;
+                imageLink.textContent = `${card.title} - ${String(imageNumber).padStart(3, 0)} - ${track.title} (icon)`;
                 imageLink.target = '_blank';
                 imageLink.style.display = 'block';
 
@@ -62,6 +107,17 @@ if (scriptElement) {
         });
     });
 
+    // Finish the metadata builder
+    container.appendChild(containermeta);
+	// it would be good to put a button next to the textarea that copies the contents to clipboard if we can't set it to be downloadable.
+	// i couldn't get this to work, its supposed to make the text content download as a txt file
+    // var file = new Blob([containermeta.value], {type: 'text/plain'});
+    // var cardMetadata = document.createElement('a');
+    // cardMetadata.href = window.URL.createObjectURL(file.getBlob('text/plain'));
+    // cardMetadata.download = `${card.title}.txt`;
+    // cardMetadata.textContent = `${card.title} Metadata`;
+    // container.appendChild(cardMetadata);
+ 
     // Insert the container at the top of the body of the page
     document.body.insertBefore(container, document.body.firstChild);
 } else {
