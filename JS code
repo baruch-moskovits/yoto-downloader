@@ -1,6 +1,23 @@
 // First, find the script element by its ID
 const scriptElement = document.getElementById('__NEXT_DATA__');
 
+function convertSeconds(seconds) {
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    const remainingSeconds = seconds % 60;
+
+    return `${hours}h ${minutes}m ${remainingSeconds}s`;
+}
+
+function formatBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+}
+
 // Check if the element exists
 if (scriptElement) {
     // Parse the JSON content of the script element
@@ -34,27 +51,60 @@ if (scriptElement) {
     albumArtLink.style.display = 'block'; // Display link on a new line
     container.appendChild(albumArtLink); // Append the album art link to the container
 
-    // Write metadata to a text file
+
+	// Get the important details that may not be defined, fallback on an undefined data so it doesn't look blank
+	var category = "tbd"
+	if(card.metadata.category === ""){
+		category = "undefined";
+	}else{
+		category = card.metadata.category;
+	}
+	var author = "tbd"
+	if(card.metadata.author === ""){
+		author = "undefined";
+	}else{
+		author = card.metadata.author;
+	}
+	var slug = "tbd"
+	if(card.slug === ""){
+		slug = "undefined";
+	}else{
+		slug = card.slug;
+	}
+	
+    // Write metadata to a text file, use ":: " as the key::value pair delimiter for safer parsing down the road. We don't want to just drop the entire json blob into the file because it may contain personal data.
     const containermeta = document.createElement('textarea');    
-    //containermeta.innerHTML += '<textarea id="metadataContent" rows="10" cols="30">';
-    containermeta.innerHTML += `Card Details\n================\n`;
-    containermeta.innerHTML += `Title: ${card.title}\n`;
-    containermeta.innerHTML += `Version: ${card.content.version}\n`;    
-    containermeta.innerHTML += `PlaybackType: ${card.content.playbackType}\n`;
-    containermeta.innerHTML += `Category: ${card.metadata.category}\n`;
-    containermeta.innerHTML += `Duration: ${card.metadata.media.duration}\n`;
-    containermeta.innerHTML += `readableDuration: ${card.metadata.media.readableDuration}\n`;
-    containermeta.innerHTML += `FileSize: ${card.metadata.media.fileSize}\n`;
-    containermeta.innerHTML += `ReadableFileSize: ${card.metadata.media.readableFileSize}\n`;
-    containermeta.innerHTML += `CardID: ${card.Id}\n`;
-    containermeta.innerHTML += `CreatedAt: ${card.createdAt}\n`;
-    containermeta.innerHTML += `UpdatedAt: ${card.updatedAt}\n`; 
-    containermeta.innerHTML += `ShareCount: ${card.shareCount}\n`;
-    containermeta.innerHTML += `Availability: ${card.availability}\n`;
-    containermeta.innerHTML += `ShareLinkUrl: ${card.shareLinkUrl}\n`;    
+    containermeta.innerHTML += `Basic Details\n================\n`;
+    containermeta.innerHTML += `Title:: ${card.title}\n`;
+	containermeta.innerHTML += `Author:: ${author}\n`; // only exsists for official cards
+    containermeta.innerHTML += `Description:: ${card.metadata.description}\n`;
+	containermeta.innerHTML += `\n`;
+	
+	containermeta.innerHTML += `Extended Details\n================\n`;
+	containermeta.innerHTML += `Version:: ${card.content.version}\n`;
+	containermeta.innerHTML += `Category:: ${category}\n`; // only exsists for official cards
+   	containermeta.innerHTML += `Languages:: ${card.metadata.languages.toString()}\n`;	//This is an array, so it needs to be forced into a string.
+    containermeta.innerHTML += `PlaybackType:: ${card.content.playbackType}\n`;
+	containermeta.innerHTML += `CardID:: ${card.cardId}\n`;
+    containermeta.innerHTML += `CreatedAt:: ${card.createdAt}\n`;
+    containermeta.innerHTML += `UpdatedAt:: ${card.updatedAt}\n`;
+	containermeta.innerHTML += `Slug:: ${slug}\n`;  // only exsists for official cards
+	containermeta.innerHTML += `sortkey:: ${card.sortkey}\n`;	
+	containermeta.innerHTML += `Duration:: ${card.metadata.media.duration}\n`;
+	containermeta.innerHTML += `ReadableDuration:: ${convertSeconds(card.metadata.media.duration)}\n`; // not always available, so let's just calculate it to be easier
+	containermeta.innerHTML += `FileSize:: ${card.metadata.media.fileSize}\n`;
+	containermeta.innerHTML += `ReadableFileSize:: ${formatBytes(card.metadata.media.fileSize)}\n`; // not always available, so let's just calculate it to be easier
+	containermeta.innerHTML += `Note:: ${card.metadata.note}\n`;
+	containermeta.innerHTML += `\n`;
+	    
+	// These fields only exist in MYO cards
+	containermeta.innerHTML += `\n`;
+	containermeta.innerHTML += `Share Statistics\n================\n`;
+	containermeta.innerHTML += `ShareCount:: ${card.shareCount}\n`;
+    containermeta.innerHTML += `Availability:: ${card.availability}\n`;
+    containermeta.innerHTML += `ShareLinkUrl:: ${card.shareLinkUrl}\n`;    
     containermeta.innerHTML += `\n`;
-    containermeta.innerHTML += `Description: ${card.metadata.description}\n`;
-    containermeta.innerHTML += `\n`;
+	
     containermeta.innerHTML += `Track Details\n================\n`;    
     // metadata continues after the tracks are looped to include track details
 
@@ -78,13 +128,15 @@ if (scriptElement) {
             container.appendChild(trackLink);
 
             // Add the track info into the metadata file
-            containermeta.innerHTML += `TrackNumber: ${String(trackNumber).padStart(3, 0)}\n`;
-            containermeta.innerHTML += `Title: ${track.title}\n`;
-            containermeta.innerHTML += `Format: ${track.format}\n`;
-            containermeta.innerHTML += `Type: ${track.type}\n`;
-            containermeta.innerHTML += `Duration (Seconds): ${track.duration}\n`;
-            containermeta.innerHTML += `FileSize: ${track.fileSize}\n`;
-            containermeta.innerHTML += `channels: ${track.channels}\n`;
+            containermeta.innerHTML += `TrackNumber:: ${String(trackNumber).padStart(3, 0)}\n`;
+            containermeta.innerHTML += `Title:: ${track.title}\n`;
+            containermeta.innerHTML += `Format:: ${track.format}\n`;
+            containermeta.innerHTML += `Type:: ${track.type}\n`;
+            containermeta.innerHTML += `Duration (Seconds):: ${track.duration}\n`;
+            containermeta.innerHTML += `ReadableDuration:: ${convertSeconds(track.duration)}\n`; 
+			containermeta.innerHTML += `FileSize:: ${track.fileSize}\n`;
+            containermeta.innerHTML += `ReadableFileSize:: ${formatBytes(track.fileSize)}\n`;
+			containermeta.innerHTML += `Channels:: ${track.channels}\n`;
             containermeta.innerHTML += `\n`;
 
             // Increment track number
