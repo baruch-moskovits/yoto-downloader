@@ -5,6 +5,11 @@ This project provides a simple and efficient tool for downloading audio files fr
 
 <img src="imgs/Screenshot .png" width="400" >
 
+# No longer working 
+This method no longer works for most Yoto cards. The URLs now return a 404 error. It still works for make-your-own cards in my limited testing. 
+
+
+
 ## Update - March 12
 
 Added sequential track numbers to the file names. The track and image names now look like this: "Track 1: Jack and the Beanstalk"
